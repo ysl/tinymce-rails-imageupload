@@ -8,4 +8,5 @@ tinyMCE.addI18n('en', {
   'Insert': "Insert",
   'Cancel': "Cancel",
   'Image description': "Image description",
+  "Drag and drop image to here": "Drag and drop image to here"
 });

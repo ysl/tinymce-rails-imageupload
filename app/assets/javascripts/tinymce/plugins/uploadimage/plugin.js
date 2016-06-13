@@ -13,11 +13,18 @@
         win = editor.windowManager.open({
           title: ed.translate('Insert an image from your computer'),
           width:  500 + parseInt(editor.getLang('uploadimage.delta_width', 0), 10),
-          height: 180 + parseInt(editor.getLang('uploadimage.delta_height', 0), 10),
+          height: 350 + parseInt(editor.getLang('uploadimage.delta_height', 0), 10),
           body: [
             {type: 'iframe',  url: 'javascript:void(0)'},
-            {type: 'textbox', name: 'file', label: ed.translate('Choose an image'), subtype: 'file'},
-            {type: 'textbox', name: 'alt',  label: ed.translate('Image description')},
+            {type: 'container', name: 'container',
+              html: '<div id="uploadArea" style="width: 450px; height: 150px; border: 10px dashed #ccc; padding: 50px 40px; display: table-cell; vertical-align: middle; text-align: center; background-size: contain; background-position: center center; background-repeat: no-repeat;">' +
+                      '<div style="text-align: center;">' + ed.translate('Drag and drop image to here') + '</div>' +
+                      '<div style="text-align: center;">or</div>' +
+                      '<input id="imageUpload" type="file" name="file" style="display: none;"/>' +
+                      '<button type="button" onclick="$(\'#imageUpload\').click();" style="border: 1px solid #666; padding: 10px; cursor: pointer;">' + ed.translate('Choose an image') + '</button>' +
+                    '</div>'
+            },
+            {type: 'textbox', name: 'alt', label: ed.translate('Image description')},
             {type: 'container', classes: 'error', html: "<p style='color: #b94a48;'>&nbsp;</p>"},
 
             // Trick TinyMCE to add a empty div that "preloads" the throbber image
@@ -92,10 +99,49 @@
         }
 
         body.appendChild(form);
+
+        // Set preview.
+        function handleFileUpload(file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#uploadArea').css('background-image', 'url(' + e.target.result + ')');
+            $('#uploadArea').children().css('display', 'none');
+          }
+          reader.readAsDataURL(file);
+        }
+
+        // Supporting drag and drop to upload image.
+        var uploadArea = $("#uploadArea");
+        uploadArea.on('dragenter', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          $(this).css('border-style', 'solid');
+        });
+        uploadArea.on('dragover', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          $(this).css('border-style', 'dotted');
+        });
+        uploadArea.on('drop', function (e) {
+          $(this).css('border-style', 'none');
+          e.preventDefault();
+          var files = e.originalEvent.dataTransfer.files;
+          $("#imageUpload").prop("files", e.originalEvent.dataTransfer.files);
+          handleFileUpload(files[0]);
+        });
+
+        // Also can upload by click button.
+        $("#imageUpload").change(function() {
+          if (this.files && this.files[0]) {
+            handleFileUpload(this.files[0])
+          }
+        });
+
       }
 
       function insertImage() {
-        if(getInputValue("file") == "") {
+        var input = $('#imageUpload')[0];
+        if (!input.files || !input.files[0]) {
           return handleError('You must choose a file');
         }
 

@@ -8,4 +8,5 @@ tinyMCE.addI18n("zh-TW", {
   "Insert": "插入",
   "Cancel": "取消",
   "Image description": "圖片敘述",
+  "Drag and drop image to here": "將檔案拖曳到這裡上傳"
 });
