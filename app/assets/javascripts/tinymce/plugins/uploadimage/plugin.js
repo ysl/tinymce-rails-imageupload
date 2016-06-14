@@ -117,14 +117,18 @@
           e.preventDefault();
           $(this).css('border-style', 'solid');
         });
+        uploadArea.on('dragleave', function (e) {
+          $(this).css('border-style', 'dashed');
+        });
         uploadArea.on('dragover', function (e) {
           e.stopPropagation();
           e.preventDefault();
-          $(this).css('border-style', 'dotted');
         });
         uploadArea.on('drop', function (e) {
-          $(this).css('border-style', 'none');
+          e.stopPropagation();
           e.preventDefault();
+          $(this).css('border-style', 'solid');
+          // Set the file to the input element.
           var files = e.originalEvent.dataTransfer.files;
           $("#imageUpload").prop("files", e.originalEvent.dataTransfer.files);
           handleFileUpload(files[0]);
