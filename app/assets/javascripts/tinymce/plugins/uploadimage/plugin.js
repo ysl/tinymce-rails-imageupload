@@ -21,6 +21,7 @@
                       '<div style="text-align: center;">' + ed.translate('Drag and drop image to here') + '</div>' +
                       '<div style="text-align: center;">or</div>' +
                       '<input id="imageUpload" type="file" name="file" style="display: none;"/>' +
+                      '<input id="activity_id" type="hidden" name="activity_id" value="' + ed.getParam("activity_id") + '"/>' +
                       '<button type="button" onclick="$(\'#imageUpload\').click();" style="border: 1px solid #666; padding: 10px; cursor: pointer;">' + ed.translate('Choose an image') + '</button>' +
                     '</div>'
             },
@@ -191,6 +192,11 @@
           if(json["error"]) {
             handleError(json["error"]["message"]);
           } else {
+            // Upload success, store the retured image id.
+            uploadimage_ids = document.getElementById(ed.getParam("uploadimage_ids_selector"));
+            if (uploadimage_ids)
+              uploadimage_ids.value += json["image"]["id"] + ',';
+            // Insert into editor.
             ed.execCommand('mceInsertContent', false, buildHTML(json));
             ed.windowManager.close();
           }
